@@ -49,10 +49,39 @@ function OrderContent() {
   const [address, setAddress] = useState('')
   const [notes, setNotes] = useState('')
 
+  // Load saved customer info from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedInfo = localStorage.getItem('customerInfo')
+      if (savedInfo) {
+        try {
+          const { name: savedName, phone: savedPhone, address: savedAddress } = JSON.parse(savedInfo)
+          if (savedName) setName(savedName)
+          if (savedPhone) setPhone(savedPhone)
+          if (savedAddress) setAddress(savedAddress)
+          
+          // Show a toast to let user know their info was loaded
+          if (savedName || savedPhone || savedAddress) {
+            toast.success('Your info has been loaded! 📝', { duration: 2000 })
+          }
+        } catch (e) {
+          console.error('Failed to load saved info:', e)
+        }
+      }
+    }
+  }, [])
+
+  // Save customer info to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (name || phone || address)) {
+      localStorage.setItem('customerInfo', JSON.stringify({ name, phone, address }))
+    }
+  }, [name, phone, address])
+
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
   const canAddToCart =
-    currentProduct !== null && (currentProduct === 'bagged_ice' || (currentProduct === 'flavored_cup' && currentFlavor !== null))
+    currentProduct !== null && currentQuantity > 0 && (currentProduct === 'bagged_ice' || (currentProduct === 'flavored_cup' && currentFlavor !== null))
 
   const canProceedToDetails = cart.length > 0
 
@@ -76,6 +105,13 @@ function OrderContent() {
     setCurrentQuantity(1)
     
     toast.success('Added to cart! 🧊')
+  }
+
+  function updateCartItemQuantity(index: number, newQuantity: number) {
+    if (newQuantity < 1) return
+    const updatedCart = [...cart]
+    updatedCart[index].quantity = newQuantity
+    setCart(updatedCart)
   }
 
   function removeFromCart(index: number) {
@@ -173,18 +209,36 @@ function OrderContent() {
                   <div className="space-y-2">
                     {cart.map((item, index) => (
                       <div key={index} className="flex items-center justify-between bg-white/5 rounded-lg p-2 sm:p-3">
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0 mr-2">
                           <p className="font-body text-white text-xs sm:text-sm truncate">
-                            {item.product === 'bagged_ice' ? '3kg Bagged Ice' : `${item.flavor} Cup`} × {item.quantity}
+                            {item.product === 'bagged_ice' ? '3kg Bagged Ice' : `${item.flavor} Cup`}
                           </p>
-                          <p className="font-body text-ice-200/60 text-[10px] sm:text-xs">{item.price * item.quantity} EGP</p>
+                          <p className="font-body text-ice-200/60 text-[10px] sm:text-xs">{item.price} EGP each</p>
                         </div>
-                        <button
-                          onClick={() => removeFromCart(index)}
-                          className="ml-2 text-red-400 hover:text-red-300 text-xs sm:text-sm font-body"
-                        >
-                          Remove
-                        </button>
+                        <div className="flex items-center gap-2">
+                          {/* Quantity controls for cart items */}
+                          <div className="flex items-center gap-1 sm:gap-2 bg-white/10 rounded-lg px-1.5 sm:px-2 py-1">
+                            <button
+                              onClick={() => updateCartItemQuantity(index, item.quantity - 1)}
+                              className="text-ice-200 hover:text-white transition-colors"
+                            >
+                              <Minus size={12} className="sm:w-3.5 sm:h-3.5" />
+                            </button>
+                            <span className="font-display text-sm sm:text-base font-bold text-white min-w-[20px] text-center">{item.quantity}</span>
+                            <button
+                              onClick={() => updateCartItemQuantity(index, item.quantity + 1)}
+                              className="text-ice-200 hover:text-white transition-colors"
+                            >
+                              <Plus size={12} className="sm:w-3.5 sm:h-3.5" />
+                            </button>
+                          </div>
+                          <button
+                            onClick={() => removeFromCart(index)}
+                            className="ml-1 text-red-400 hover:text-red-300 text-xs sm:text-sm font-body"
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -322,7 +376,23 @@ function OrderContent() {
               exit={{ opacity: 0, x: -30 }}
               transition={{ duration: 0.3 }}
             >
-              <h2 className="font-display text-xl sm:text-2xl text-white mb-4 sm:mb-6">Your Details</h2>
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h2 className="font-display text-xl sm:text-2xl text-white">Your Details</h2>
+                {(name || phone || address) && (
+                  <button
+                    onClick={() => {
+                      setName('')
+                      setPhone('')
+                      setAddress('')
+                      localStorage.removeItem('customerInfo')
+                      toast.success('Info cleared')
+                    }}
+                    className="text-xs sm:text-sm text-ice-200/60 hover:text-ice-200 transition-colors font-body"
+                  >
+                    Clear Info
+                  </button>
+                )}
+              </div>
 
               <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
                 {[
