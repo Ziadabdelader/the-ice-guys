@@ -37,14 +37,14 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-          {/* Logo */}
+          {/* Logo - Always ice-200 color */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative w-12 h-12 rounded-xl overflow-hidden glass border border-white/20 flex items-center justify-center group-hover:border-ice-300/50 transition-all">
               {/* Logo text fallback */}
               <span className="font-display font-black text-xs text-ice-200 text-center leading-tight px-1">THE ICE GUYS</span>
             </div>
             <div className="hidden sm:block">
-              <p className="font-display font-bold text-white text-lg leading-tight">The Ice Guys</p>
+              <p className="font-display font-bold text-ice-200 text-lg leading-tight">The Ice Guys</p>
               <p className="text-ice-300 text-xs font-body tracking-widest uppercase">Bagged Ice Cubes</p>
             </div>
           </Link>
@@ -57,8 +57,8 @@ export default function Navbar() {
                 href={link.href}
                 className={`relative px-5 py-2 rounded-xl font-body font-medium text-sm transition-all duration-300 ${
                   pathname === link.href
-                    ? 'text-white'
-                    : 'text-ice-200/70 hover:text-white'
+                    ? 'text-ice-200'
+                    : 'text-ice-200/70 hover:text-ice-200'
                 }`}
               >
                 {pathname === link.href && (
