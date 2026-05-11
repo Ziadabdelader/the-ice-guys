@@ -77,9 +77,9 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <Link
               href="/order"
-              className="btn-ice hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-xl font-body font-semibold text-sm text-white"
+              className="btn-ice hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-xl font-body font-semibold text-sm text-ice-200"
             >
-              <ShoppingBag size={16} />
+              <ShoppingBag size={16} className="text-ice-200" />
               Order Now
             </Link>
 
@@ -87,7 +87,7 @@ export default function Navbar() {
               onClick={() => setMobileOpen(!mobileOpen)}
               className="md:hidden glass border border-white/20 p-2.5 rounded-xl text-ice-200"
             >
-              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+              {mobileOpen ? <X size={20} className="text-ice-200" /> : <Menu size={20} className="text-ice-200" />}
             </button>
           </div>
         </div>
@@ -115,8 +115,8 @@ export default function Navbar() {
                   onClick={() => setMobileOpen(false)}
                   className={`flex items-center py-3.5 px-4 rounded-xl font-body font-medium text-base mb-1 transition-all ${
                     pathname === link.href
-                      ? 'glass text-white border border-white/20'
-                      : 'text-ice-200/70 hover:text-white hover:bg-white/5'
+                      ? 'glass text-ice-200 border border-white/20'
+                      : 'text-ice-200/70 hover:text-ice-200 hover:bg-white/5'
                   }`}
                 >
                   {link.label}
