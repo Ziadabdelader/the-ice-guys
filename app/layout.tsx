@@ -6,6 +6,7 @@ import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import Navbar from '@/components/layout/Navbar'
 import dynamic from 'next/dynamic'
+import { usePathname } from 'next/navigation'
 
 // Lazy load 3D background for better initial page load
 const IceBackground = dynamic(() => import('@/components/3d/IceBackground'), {
@@ -30,6 +31,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const pathname = usePathname()
+  const isAdminPage = pathname === '/admin'
+
   return (
     <html lang="en" className={`${playfair.variable} ${outfit.variable}`}>
       <head>
@@ -38,11 +42,11 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="noise-overlay bg-[#020d1a] min-h-screen">
-        {/* Full-screen 3D ice cube background - lazy loaded */}
-        <IceBackground />
+        {/* Full-screen 3D ice cube background - lazy loaded (not on admin page) */}
+        {!isAdminPage && <IceBackground />}
         
-        {/* Navigation */}
-        <Navbar />
+        {/* Navigation - hidden on admin page */}
+        {!isAdminPage && <Navbar />}
         
         {/* Page content */}
         <main className="relative z-10">
